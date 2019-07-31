@@ -5,11 +5,13 @@ let getLoginRegister = (req, res) => {
   return res.render("auth/master", {
     errors: req.flash("errors"),
     success: req.flash("success")
-  });
+  }); 
 };
 
 let postRegister = async (req, res) => {
   let errorArr = [];
+  let successArr = [];
+
   let validationErrors = validationResult(req);
   if(!validationErrors.isEmpty()) {
     let errors = Object.values(validationErrors.mapped());
@@ -19,17 +21,38 @@ let postRegister = async (req, res) => {
     req.flash("errors", errorArr);
     return res.redirect("/login-register");
   }
-  await auth.register(req.body.email, req.body.gender, req.body.password);
+  try {
+    let createUserSuccess = await auth.register(req.body.email, req.body.gender, req.body.password, req.protocol, req.get("host"));
+    successArr.push(createUserSuccess);
+
+    req.flash("success", successArr);
+    return res.redirect("/login-register");
+  } catch (error) {
+    errorArr.push(error);
+    req.flash("errors", errorArr);
+    return res.redirect("/login-register");
+  }
 };
 
-// try {
-//   await auth.register(req.body.email, req.body.gender, req.body.password);
-// } catch (error) {
-  
-// }
+let verifyAccount = async (req, res) => {
+  let errorArr = [];
+  let successArr = [];
 
+  try {
+    let verifySuccess = await auth.verifyAccount(req.params.token);
+    successArr.push(verifySuccess);
+
+    req.flash("success", successArr);
+    return res.redirect("/login-register");
+  } catch (error) {
+    errorArr.push(error);
+    req.flash("errors", errorArr);
+    return res.redirect("/login-register");
+  }
+};
 
 module.exports = {
   getLoginRegister: getLoginRegister,
-  postRegister: postRegister
+  postRegister: postRegister,
+  verifyAccount: verifyAccount
 };
