@@ -1,11 +1,27 @@
 import express from "express";
-let app = express();
-let port = 2407;
+import ConnectDB from "./config/connectDB";
+import ContactModel from "./models/contact.model";
 
-app.get("/helloworld", (req, res) => {
-  res.send('Hello World');
+let app = express();
+
+// Connect to MongoDB
+ConnectDB();
+
+app.get("/test-database", async (req, res) => {
+  try {
+    let item = {
+      userId: "1333113123232",
+      contactId: "1313132232344546576"
+    };
+    let contact = await ContactModel.createNew(item);
+    res.send(contact);
+  } catch (err) {
+    console.log(err);
+  }
+
+  
 });
 
-app.listen(port, () => {
-  console.log('Server listenning on port ' + port);
+app.listen(process.env.APP_PORT, process.env.APP_HOST, () => {
+  console.log(`Server listenning at ${process.env.APP_HOST}:${process.env.APP_PORT}/`);
 });
