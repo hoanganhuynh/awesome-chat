@@ -57,8 +57,12 @@ UserSchema.statics = {
 
   findUserById(id) {
     return this.findById(id).exec(); // findById(MongoDB)
+  },
+
+  findByFacebookUid(uid) {
+    return this.findOne({"facebook.uid": uid}).exec();
   }
-};
+}
 
 UserSchema.methods = {
   comparePassword(password) {
