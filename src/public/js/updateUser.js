@@ -80,24 +80,42 @@ $(document).ready(function() {
     $.ajax({
       url: "/user/update-avatar",
       type: "put",
-      catch: false,
+      cache: false,
       contentType: false,
       processData: false,
       data: userAvatar,
       success: function(result) {
-        //
+        //console.log(result);
+        // Display success
+        $(".user-modal-alert-success").find("span").text(result.message);
+        $(".user-modal-alert-success").css("display", "block");
+
+        // Update avatar at navbar
+        $("#navbar-avatar").attr("src", result.imageSrc);
+
+        // Update origin avatar 
+        originAvatarSrc = result.imageSrc;
+
+        // reset all
+        $("#input-btn-cancer-update-user").click();
+
       },
       error: function(error) {
-        //
-      }
+        // display err
+        console.log(error);
+        $(".user-modal-alert-error").find("span").text(error.responseText);
+        $(".user-modal-alert-error").css("display", "block");
+
+        // reset all
+        $("#input-btn-cancer-update-user").click();
+      },
     });
-    // console.log(userAvatar);
-    // console.log(userInfo);
   });
 
   $("#input-btn-cancer-update-user").bind("click", function() {
     userAvatar = null;
     userInfo = {};
+    $("#input-change-avatar").val(null);
     $("#user-modal-avatar").attr("src", originAvatarSrc);
   });
   
